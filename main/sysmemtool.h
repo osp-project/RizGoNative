@@ -1,4 +1,3 @@
-// 假设您的.h文件名为mem_info.h
 #ifndef SYS_MEM_TOOL_H // 防止头文件重复包含
 #define SYS_MEM_TOOL_H
 

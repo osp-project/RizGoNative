@@ -19,7 +19,7 @@ static void wifi_event_handler(void* arg, esp_event_base_t event_base, int32_t e
     }
 }
 
-bool createap(char* ssid_, char* password_, uint8_t channel, uint8_t maxconn){
+bool createap(const char* ssid_, const char* password_, uint8_t channel, uint8_t maxconn){
     uint8_t ssid[32] = {0};
     memcpy(ssid, (uint8_t*)ssid_, 32); // 使用memcpy函数将str所指向的内容复制到arr中
     uint8_t password[64] = {0};
