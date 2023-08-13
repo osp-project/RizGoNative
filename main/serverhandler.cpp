@@ -1,8 +1,9 @@
 #include "esp_http_server.h"
 #include <cryptotool.cpp>
 #include <serverhandlerutil.cpp>
-#include <base64.h>
 #include <sysmemtool.h>
+#include <iostream>
+#include <charsetutils.h>
 
 //以下为没有什么大用的测试用途handler定义，可以不看
 
@@ -12,24 +13,21 @@ esp_err_t do_aes_test_get_handler(httpd_req_t *req)
 
     char* urlquery = get_req_query(req);
 
-    printf("读key\n");
-    std::string aeskey = get_value(urlquery,"key");
-    printf("读iv\n");
-    std::string aesiv = get_value(urlquery,"iv");
-    printf("读text\n");
-    std::string aestext = get_value(urlquery,"text");
-    printf("调函数\n");
+    //printf("读key\n");
+    std::string aeskey = convert_to_utf8(get_value(urlquery,"key"));
+    //printf("读iv\n");
+    std::string aesiv = convert_to_utf8(get_value(urlquery,"iv"));
+    //printf("读text\n");
+    std::string aestext = convert_to_utf8(get_value(urlquery,"text"));
+    //printf("调函数\n");
 
-    // 修改开始
-    size_t len = strlen(aestext.c_str()); // 获取明文长度
-    uint8_t padByte = AES_BLOCK_SIZE - (len % AES_BLOCK_SIZE); // 计算填充字节数
-    len += padByte; // 更新密文长度
-    uint8_t* encrypt_ret = EncryptAes(aeskey,aesiv,aestext); // 调用加密函数
-    std::string respstr = base64_encode(encrypt_ret,len); // 使用正确的长度进行编码
-    delete[] encrypt_ret; // 释放内存
-    // 修改结束
+    std::cout << "收到AES加密测试请求，key=" << aeskey << " iv=" << aesiv << " text=" << aestext << std::endl;
 
-    httpd_resp_send(req, respstr.c_str(), HTTPD_RESP_USE_STRLEN); //发送响应内容给客户端
+    std::string encrypt_ret = EncryptAes(aeskey,aesiv,aestext);
+
+    httpd_resp_send(req, encrypt_ret.c_str(), HTTPD_RESP_USE_STRLEN); //发送响应内容给客户端
+
+    std::cout << "密文返回：" << encrypt_ret << std::endl;
 
     print_mem_info();
     
