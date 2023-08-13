@@ -25,7 +25,7 @@ aes = AESCipher("abcdefghijklmnopqrstuvwxyz012345")
 print("AES实例已创建")
 
 # 调用decrypt方法，传入base64字符串和iv，得到解密后的明文
-plaintext = aes.decrypt("CI2O5vxpRlU7+60A64gVGA==","asasasasasasasas")
+plaintext = aes.decrypt("MaDjQuz2vAi9vB0WcN2Dn0/hDe+UMwR/Y3l1S9N9CywYgGjEDCdRwsrv84Z5Sgtv","asasasasasasasas")
 
 # 打印明文
 print(plaintext)

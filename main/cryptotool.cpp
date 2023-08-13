@@ -1,72 +1,27 @@
-#include <mbedtls/aes.h>
+#include <aes.h>
 #include <string>
 #include <array>
 #include <algorithm>
 #include <base64.h>
 
-// 定义一个常量，表示 key 的长度（位）
-constexpr size_t KEY_LENGTH = 256;
+// A function to pad the text with PKCS7 padding scheme
+std::string pkcs7_pad(const std::string& text, int block_size) {
+    int pad_len = block_size - (text.size() % block_size); // Calculate the padding length
+    char pad_char = static_cast<char>(pad_len); // Convert the padding length to a char
+    std::string padded_text = text; // Copy the original text
+    padded_text.append(pad_len, pad_char); // Append the padding char to the end of the text
+    return padded_text; // Return the padded text
+}
 
-// 定义一个常量，表示 aes 的块大小（字节）
-constexpr size_t AES_BLOCK_SIZE = 16;
-
-// 定义一个 aes 上下文
-mbedtls_aes_context aes;
-
-bool aesinit = false;
-
-// 定义一个加密函数，接受 std::string 类型的 key, iv, 和明文，并返回 std::string 类型的密文
-std::string EncryptAes(const std::string& key, const std::string& iv, const std::string& plaintext) {
-    //printf("AES Encrypt > 被调用\n");
-
-    // 转换 key 和 iv 为 std::array<uint8_t, AES_BLOCK_SIZE>
-    std::array<uint8_t, AES_BLOCK_SIZE> key_uint8;
-    std::array<uint8_t, AES_BLOCK_SIZE> iv_uint8;
-    std::copy_n(key.begin(), AES_BLOCK_SIZE, key_uint8.begin());
-    std::copy_n(iv.begin(), AES_BLOCK_SIZE, iv_uint8.begin());
-
-    // 转换 plaintext 为 uint8_t*
-    size_t len = plaintext.size();
-    uint8_t* plaintext_uint8 = new uint8_t[len];
-    std::copy_n(plaintext.begin(), len, plaintext_uint8);
-
-    //printf("AES Encrypt > 初始化完成\n");
-
-    // 对 plaintext 进行填充，使其长度为 AES_BLOCK_SIZE 的倍数
-    uint8_t padByte = AES_BLOCK_SIZE - (len % AES_BLOCK_SIZE);
-    len += padByte;
-    uint8_t* padded_plaintext = new uint8_t[len];
-    std::copy_n(plaintext_uint8, len - padByte, padded_plaintext);
-    std::fill_n(padded_plaintext + len - padByte, padByte, padByte);
-    delete[] plaintext_uint8;
-
-    //printf("AES Encrypt > 明文填充完毕\n");
-
-    if(!aesinit){
-        // 初始化 aes 上下文
-        mbedtls_aes_init(&aes);
-        aesinit = true;
-    }
-
-    // 设置加密密钥
-    mbedtls_aes_setkey_enc(&aes, key_uint8.data(), KEY_LENGTH);
-
-    //printf("AES Encrypt > mbedtls组件初始化完毕\n");
-
-    // 定义一个输出数组
-    uint8_t* output = new uint8_t[len];
-
-    // 执行加密操作
-    mbedtls_aes_crypt_cbc(&aes, MBEDTLS_AES_ENCRYPT, len, iv_uint8.data(), padded_plaintext, output);
-
-    delete[] padded_plaintext;
-
-    // 使用 base64 编码库将输出数组转换为 std::string 类型
-    std::string ciphertext = base64_encode(output, len);
-
-    delete[] output;
-
-    // 返回密文字符串
-    return ciphertext;
-
+// A function to encrypt the text with AES-256 CBC mode and return the base64 encoded ciphertext
+std::string aes_256_cbc_encrypt(const std::string& key, const std::string& iv, const std::string& text) {
+    struct AES_ctx ctx; // Create an AES context
+    AES_init_ctx_iv(&ctx, reinterpret_cast<const uint8_t*>(key.data()), reinterpret_cast<const uint8_t*>(iv.data())); // Initialize the context with the key and iv
+    std::string padded_text = pkcs7_pad(text, 16); // Pad the text with PKCS7 padding scheme
+    uint8_t* buffer = new uint8_t[padded_text.size()]; // Allocate a buffer to store the encrypted data
+    std::copy(padded_text.begin(), padded_text.end(), buffer); // Copy the padded text to the buffer
+    AES_CBC_encrypt_buffer(&ctx, buffer, padded_text.size()); // Encrypt the buffer with AES-256 CBC mode
+    std::string base64_ciphertext = base64_encode(buffer, padded_text.size()); // Encode the encrypted buffer with base64
+    delete[] buffer; // Free the buffer memory
+    return base64_ciphertext; // Return the base64 encoded ciphertext
 }

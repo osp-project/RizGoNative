@@ -23,7 +23,7 @@ esp_err_t do_aes_test_get_handler(httpd_req_t *req)
 
     std::cout << "收到AES加密测试请求，key=" << aeskey << " iv=" << aesiv << " text=" << aestext << std::endl;
 
-    std::string encrypt_ret = EncryptAes(aeskey,aesiv,aestext);
+    std::string encrypt_ret = aes_256_cbc_encrypt(aeskey,aesiv,aestext);
 
     httpd_resp_send(req, encrypt_ret.c_str(), HTTPD_RESP_USE_STRLEN); //发送响应内容给客户端
 
