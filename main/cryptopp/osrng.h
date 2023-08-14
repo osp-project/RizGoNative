@@ -8,7 +8,7 @@
 
 #include "config.h"
 
-#if !defined(NO_OS_DEPENDENCE) && defined(OS_RNG_AVAILABLE)
+//#if !defined(NO_OS_DEPENDENCE) && defined(OS_RNG_AVAILABLE)
 
 #include "cryptlib.h"
 #include "randpool.h"
@@ -301,4 +301,4 @@ NAMESPACE_END
 
 #endif
 
-#endif
+//#endif

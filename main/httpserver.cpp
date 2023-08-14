@@ -12,6 +12,7 @@ httpd_handle_t start_webserver(void)
         httpd_register_uri_handler(server, &hello_get);
         httpd_register_uri_handler(server, &echo_post);
         httpd_register_uri_handler(server, &aes_test_get);
+        httpd_register_uri_handler(server, &rsa_test_get);
     }
     printf("HttpServer已启动\n");
     return server; //返回 HTTP 服务器的句柄
