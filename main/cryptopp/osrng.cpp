@@ -16,7 +16,7 @@
 # pragma message("WARNING: Compiling for Windows but an OS RNG is not available. This is likely a Windows Phone 8 or Windows Store 8 app.")
 #endif
 
-#if !defined(NO_OS_DEPENDENCE) && defined(OS_RNG_AVAILABLE)
+//#if !defined(NO_OS_DEPENDENCE) && defined(OS_RNG_AVAILABLE)
 
 #include "osrng.h"
 #include "rng.h"
@@ -334,4 +334,4 @@ NAMESPACE_END
 
 #endif  // OS_RNG_AVAILABLE
 
-#endif  // CRYPTOPP_IMPORTS
+//#endif  // CRYPTOPP_IMPORTS
