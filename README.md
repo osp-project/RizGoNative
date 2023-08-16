@@ -1,5 +1,7 @@
 # RizGoNative
-RizServer的嵌入式版本，适用于ESP32全系芯片（Maybe support esp8266?），更多消息待公开
+RizServer的嵌入式版本，***目前正在开发中*** ***处于不可用状态***
+
+适用于ESP32全系芯片（Maybe support esp8266?），更多消息待公开
 
 ## 开源项目
 多亏了一些开源项目，RizGoNative才得以实现如今的效果，我真诚地感谢它们：
